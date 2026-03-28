@@ -1,29 +1,29 @@
 import os
 
 import joblib
-import pandas as pd
 from sklearn.compose import ColumnTransformer
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import mean_absolute_error, r2_score
 from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder
-import pathlib
 from pathlib import Path
+
+from data.data_adapter import load_training_dataframe
 
 
 def train_model():
-    """Trains a random forest model to estimate shipping cost using historical shipment data. Extreme cost values
-    are capped at the 95th percentile to reduce noise from simulated outliers.
+    """Trains a random forest model to estimate shipping cost using historical shipment data.
 
     Categorical features:
     Origin_Warehouse
     Destination
     Carrier
+    Service
 
     Numerical features:
     Weight
-    Transit_Days (proxy for service level and delivery speed)
+    Distance_Miles
 
     Target variable:
     Cost
@@ -32,32 +32,21 @@ def train_model():
     sklearn.pipeline.Pipeline: Trained regression pipeline
     """
 
-    # import historical data and remove missing values
-    BASE_DIR = pathlib.Path(__file__).resolve().parent.parent
-    DATA_PATH = BASE_DIR / "data" / "logistics_shipments_dataset.csv"
-
-    df = pd.read_csv(DATA_PATH)
-    df = df.dropna(subset=['Origin_Warehouse', 'Destination', 'Carrier', 'Weight_kg', 'Transit_Days', 'Cost'])
-
-    # further refine data to only delivered shipments to avoid uncertain outcomes and invalid transit days
-    df = df[df["Status"] == "Delivered"]
-
-    # cap extreme cost values to reduce noise from simulated outliers
-    upper = df["Cost"].quantile(0.95)
-    df.loc[:, "Cost"] = df["Cost"].clip(upper=upper)
+    # load training data
+    df = load_training_dataframe()
 
     # split target and training data
     y = df['Cost']
-    X = df[['Origin_Warehouse', 'Destination', 'Carrier', 'Weight_kg', 'Transit_Days']]
-    categorical = ['Origin_Warehouse', 'Destination', 'Carrier']
-    numerical = ['Weight_kg', 'Transit_Days']
+    X = df[['Origin_Warehouse', 'Destination', 'Carrier', 'Weight_kg', 'Service', 'Distance_Miles']]
+    categorical = ['Origin_Warehouse', 'Destination', 'Carrier', 'Service']
+    numerical = ['Weight_kg', 'Distance_Miles']
 
     # set encoding for categorical data
     preprocessor = ColumnTransformer(
         transformers=[('cat', OneHotEncoder(handle_unknown='ignore'), categorical), ('num', 'passthrough', numerical)])
 
     # build random forest model and pipeline
-    rf_model = RandomForestRegressor(n_estimators=100, random_state=42)
+    rf_model = RandomForestRegressor(n_estimators=300, random_state=42)
     pipeline = Pipeline(steps=[
         ("preprocessor", preprocessor),
         ("model", rf_model)
@@ -89,6 +78,8 @@ def train_once():
         print("Model now trained successfully")
         return pipeline
 
+if __name__ == "__main__":
+    train_once()
 
 
 

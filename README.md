@@ -187,7 +187,13 @@ http://localhost:8501
 ### Training Behavior
 
 - Model auto-trains if no saved pipeline exists  
-- Persisted using `joblib`  
+- Persisted using `joblib`
+
+## Model Note
+
+The trained model file is not included in the repository due to size.
+
+The application will automatically train the model on first run if no saved pipeline is found.  
 
 ---
 
