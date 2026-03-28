@@ -3,6 +3,15 @@ __pycache__/
 *.py[codz]
 *$py.class
 
+# Model artifacts
+model/*.pkl
+model/*.joblib
+*.pkl
+*.joblib
+
+# macOS
+.DS_Store
+
 # C extensions
 *.so
 
