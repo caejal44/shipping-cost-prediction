@@ -42,6 +42,15 @@ The app allows users to input shipment details and receive ranked carrier recomm
 - Supporting charts provide context for decision-making  
 
 ---
+### Example Interface
+
+![Input Panel](images/input_panel.png)
+
+![Carrier Rankings](images/carrier_rankings.png)
+
+![Analytics Dashboard](images/analytics_dashboard.png)
+
+---
 
 ## Key Features
 

@@ -1,5 +1,3 @@
-import os
-
 import joblib
 from sklearn.compose import ColumnTransformer
 from sklearn.ensemble import RandomForestRegressor
@@ -43,10 +41,16 @@ def train_model():
 
     # set encoding for categorical data
     preprocessor = ColumnTransformer(
-        transformers=[('cat', OneHotEncoder(handle_unknown='ignore'), categorical), ('num', 'passthrough', numerical)])
+        transformers=[('cat', OneHotEncoder(handle_unknown='ignore', sparse_output=True), categorical),
+                      ('num', 'passthrough', numerical)])
 
     # build random forest model and pipeline
-    rf_model = RandomForestRegressor(n_estimators=300, random_state=42)
+    rf_model = RandomForestRegressor(n_estimators=100,
+                                     max_depth=15,
+                                     min_samples_leaf=5,
+                                     min_samples_split=10,
+                                     random_state=42,
+                                     n_jobs=-1)
     pipeline = Pipeline(steps=[
         ("preprocessor", preprocessor),
         ("model", rf_model)
@@ -71,12 +75,12 @@ def train_once():
 
     if MODEL_PATH.exists():
         print("Model already trained. No training necessary.")
-        return MODEL_PATH
     else:
         pipeline = train_model()
-        joblib.dump(pipeline, MODEL_PATH)
+        joblib.dump(pipeline, MODEL_PATH, compress=3)
         print("Model now trained successfully")
-        return pipeline
+
+    return MODEL_PATH
 
 if __name__ == "__main__":
     train_once()
