@@ -46,6 +46,8 @@ The app allows users to input shipment details and receive ranked carrier recomm
 
 ![Input Panel](images/input_panel.png)
 
+*Example: Shipment input and carrier ranking results showing predicted cost, transit time, and delivery risk.*
+
 ![Carrier Rankings](images/carrier_rankings.png)
 
 ![Analytics Dashboard](images/analytics_dashboard.png)
@@ -58,7 +60,7 @@ The app allows users to input shipment details and receive ranked carrier recomm
 Predicts shipping cost for all carriers servicing a given route using a trained ML model.
 
 ### 2. Carrier Ranking System
-Carriers are ranked by estimated cost, with additional context:
+Carriers are ranked by lowest predicted cost, with additional context from historical transit performance and data coverage:
 
 - Average transit days  
 - Delivery risk vs user-selected delivery date  
